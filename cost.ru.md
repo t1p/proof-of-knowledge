@@ -12,8 +12,9 @@
 Основание - создание на принципах Coopia Fractal https://github.com/t1p/Coopia-Fractal
 
 ##Учет контрибуции:
-Date: 2022.02.02
-Cost: 3 hours х 1 HTPK
-Author: Igor Trapeznikov (https://github.com/t1p)
-Wallet ERC20: 0x4AC14e5e9B6bd85336C88b1F0aE05D6501788393
-Description: First commit. Formulation and description of the project concept.
+
+	Date: 2022.02.02
+	Cost: 3 hours х 1 HTPK
+	Author: Igor Trapeznikov (https://github.com/t1p)
+	Wallet ERC20: 0x4AC14e5e9B6bd85336C88b1F0aE05D6501788393
+	Description: First commit. Formulation and description of the project concept.
