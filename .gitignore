@@ -1,9 +1,9 @@
-./pok-dao-contracts/build/
-./pok-dao-contracts/reports/
-./pok-dao-contracts/__pycache__
+*/build/
+*/reports/
+*/tests/
+*__pycache__
 ./pok-dao-contracts/.hypothesis/
 ./pok-dao-contracts/.env
 ./pok-dao-contracts/.history
-
-
+*.DS_Store
 
