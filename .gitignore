@@ -1,6 +1,5 @@
 */build/
 */reports/
-*/tests/
 *__pycache__
 ./pok-dao-contracts/.hypothesis/
 ./pok-dao-contracts/.env
