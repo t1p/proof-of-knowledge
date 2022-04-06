@@ -16,7 +16,7 @@ def test_initial_state(verification_contract):
     assert verification_contract.name() == COMMUNITY_NAME
 
 
-def test_set(verification_contract, accounts):
+def test_vote(verification_contract, accounts):
     # set the value to 10
-    verification_contract.approve({'from': accounts[1], 'amount': 5000000})
-    assert verification_contract.member() == accounts[1]
+    verification_contract.vote(True, {'from': accounts[1], 'amount': 5000000})
+    assert verification_contract.membersList(0) == accounts[1]

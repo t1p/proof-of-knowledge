@@ -1,4 +1,4 @@
-# @version ^0.3.0
+# @version ^0.3.1
 # Safe Remote Purchase
 # Originally from
 # https://github.com/ethereum/solidity/blob/develop/docs/solidity-by-example.rst
@@ -23,7 +23,9 @@ name: public(String[100])
 area: public(String[100])
 contractContent: public(String[100])
 founder: public(address)
-member: public(address)
+members: HashMap[address, bool]
+membersList: public(address[42])
+membersCount: public(int128)
 initialVotingEnd: public(uint256)
 initialized: public(bool)
 ready: public(bool)
@@ -38,6 +40,7 @@ def __init__(_communityName: String[100], _validationArea: String[100], _contrac
     self.initialVotingEnd = block.timestamp + _initialVotingPeriod
     self.value = msg.value  # The founder initializes the contract by posting a safety deposit of FOUNDER_DEPOSIT
     self.founder = msg.sender
+    self.membersCount = 0
     self.initialized = True
 
 @external
@@ -49,20 +52,20 @@ def abort():
 
 @external
 @payable
-def approve():
+def vote(_decision: bool):
     assert self.initialized # Is the contract still open (is the item still up
 
     assert block.timestamp < self.initialVotingEnd
                          # for sale)?
     assert msg.value == MEMBER_DEPOSIT
-    self.member = msg.sender
-    ## self.unlocked = False
+    self.members[msg.sender] = _decision
+    self.membersList[self.membersCount] = msg.sender
+    self.membersCount += 1
 
 @external
 def createCommunity():
-    # 1. Conditions
-    assert not self.initialized # Is the item already purchased and pending
-                             # confirmation from the member?
+
+    assert self.initialized # Is the item already purchased and pending confirmation from the member?
     assert msg.sender == self.founder
     assert not self.ready
 
@@ -72,5 +75,5 @@ def createCommunity():
     self.ready = True
 
     # 3. Interaction
-    send(self.member, self.value) # Return the member's deposit (=value) to the member.
+    # send(self.member, self.value) # Return the member's deposit (=value) to the member.
     selfdestruct(self.founder) # Return the founder's deposit (=2*value) and the purchase price (=value) to the founder.
