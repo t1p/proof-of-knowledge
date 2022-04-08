@@ -16,7 +16,8 @@
 
 FOUNDER_DEPOSIT: constant(uint256) = 25000000
 MEMBER_DEPOSIT: constant(uint256) = 5000000
-
+MAX_VOTERS: constant(int128) = 128
+PERCENT_POSITIVE_VOTERS: constant(int128) = 60
 
 value: public(uint256) #Value of the item
 name: public(String[100])
@@ -58,6 +59,7 @@ def vote(_decision: bool):
     assert block.timestamp < self.initialVotingEnd
                          # for sale)?
     assert msg.value == MEMBER_DEPOSIT
+
     self.members[msg.sender] = _decision
     self.membersList[self.membersCount] = msg.sender
     self.membersCount += 1
@@ -71,9 +73,13 @@ def createCommunity():
 
     assert block.timestamp > self.initialVotingEnd
 
+    numberOfPositiveVoters: int128 = 0
+    for i in range(MAX_VOTERS):
+        if(i >= self.membersCount):
+            break
+        if(self.members[self.membersList[i]]):
+            numberOfPositiveVoters += 1
+
+    assert (numberOfPositiveVoters/self.membersCount) * 100 > PERCENT_POSITIVE_VOTERS
     # 2. Effects
     self.ready = True
-
-    # 3. Interaction
-    # send(self.member, self.value) # Return the member's deposit (=value) to the member.
-    selfdestruct(self.founder) # Return the founder's deposit (=2*value) and the purchase price (=value) to the founder.
