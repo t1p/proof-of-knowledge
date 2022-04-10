@@ -28,6 +28,20 @@ def test_two_positive_vote(verification_contract, accounts, chain):
     assert verification_contract.membersList(0) == accounts[1]
     assert verification_contract.membersList(1) == accounts[2]
 
-    chain.sleep(10000)# Should be instant
+    chain.sleep(100000)# Should be instant
+    verification_contract.createCommunity({'from': accounts[0]})
+    assert verification_contract.ready() == True
+
+
+def test_re_vote(verification_contract, accounts, chain):
+    # set the value to 10
+    verification_contract.vote(False, {'from': accounts[1], 'amount': 5000000})
+    verification_contract.vote(False, {'from': accounts[2], 'amount': 5000000})
+    assert verification_contract.membersList(0) == accounts[1]
+    assert verification_contract.membersList(1) == accounts[2]
+    verification_contract.revote(True, {'from': accounts[1]})
+    verification_contract.revote(True, {'from': accounts[2]})
+
+    chain.sleep(100000)# Should be instant
     verification_contract.createCommunity({'from': accounts[0]})
     assert verification_contract.ready() == True

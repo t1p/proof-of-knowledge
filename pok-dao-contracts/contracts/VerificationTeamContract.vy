@@ -57,12 +57,29 @@ def vote(_decision: bool):
     assert self.initialized # Is the contract still open (is the item still up
 
     assert block.timestamp < self.initialVotingEnd
-                         # for sale)?
-    assert msg.value == MEMBER_DEPOSIT
 
-    self.members[msg.sender] = _decision
+    assert msg.value == MEMBER_DEPOSIT
+    
     self.membersList[self.membersCount] = msg.sender
     self.membersCount += 1
+    
+    self.members[msg.sender] = _decision
+
+@external
+@payable
+def revote(_decision: bool):
+    assert self.initialized # Is the contract still open (is the item still up
+
+    assert block.timestamp < self.initialVotingEnd
+    alreadyVoted: bool = False
+    for i in range(MAX_VOTERS):
+        if(i >= self.membersCount):
+            break
+        if(self.membersList[i] == msg.sender):
+            alreadyVoted = True
+    
+    assert alreadyVoted
+    self.members[msg.sender] = _decision
 
 @external
 def createCommunity():
