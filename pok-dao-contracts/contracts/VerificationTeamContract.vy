@@ -17,7 +17,14 @@
 FOUNDER_DEPOSIT: constant(uint256) = 25000000
 MEMBER_DEPOSIT: constant(uint256) = 5000000
 MAX_VOTERS: constant(int128) = 128
-PERCENT_POSITIVE_VOTERS: constant(int128) = 60
+PERCENT_POSITIVE_VOTES_DEFAULT: constant(int128) = 60
+
+
+struct ValidationRules:
+    approach: String[100]
+    price: uint256
+    participantsNumber: int128
+    reactionTimeout: uint256
 
 value: public(uint256) #Value of the item
 name: public(String[100])
@@ -30,6 +37,9 @@ membersCount: public(int128)
 initialVotingEnd: public(uint256)
 initialized: public(bool)
 ready: public(bool)
+percentPositiveVotes: public(int128)
+
+validationRules: public(ValidationRules)
 
 @external
 @payable
@@ -42,7 +52,29 @@ def __init__(_communityName: String[100], _validationArea: String[100], _contrac
     self.value = msg.value  # The founder initializes the contract by posting a safety deposit of FOUNDER_DEPOSIT
     self.founder = msg.sender
     self.membersCount = 0
+    self.percentPositiveVotes = PERCENT_POSITIVE_VOTES_DEFAULT
     self.initialized = True
+
+
+@external
+def setValidationRules(_approach: String[100], _price: uint256, _participantsNumber: int128, _reactionTimeout: uint256):
+    assert self.initialized #
+    assert msg.sender == self.founder
+    assert not self.ready
+
+    self.validationRules = ValidationRules({approach: _approach, price: _price, participantsNumber: _participantsNumber, reactionTimeout: _reactionTimeout})
+
+
+@external
+def setPercentPositiveVotes(_percent: int128):
+    assert _percent >= 0
+    assert _percent <= 100
+
+    assert self.initialized
+    assert msg.sender == self.founder
+    assert not self.ready
+
+    self.percentPositiveVotes = _percent
 
 @external
 def abort():
@@ -97,6 +129,6 @@ def createCommunity():
         if(self.members[self.membersList[i]]):
             numberOfPositiveVoters += 1
 
-    assert (numberOfPositiveVoters/self.membersCount) * 100 > PERCENT_POSITIVE_VOTERS
+    assert (numberOfPositiveVoters/self.membersCount) * 100 >= self.percentPositiveVotes
     # 2. Effects
     self.ready = True
